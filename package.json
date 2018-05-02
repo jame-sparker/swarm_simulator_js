@@ -1,0 +1,8 @@
+{
+  "name": "fluck-simulatorjs",
+  "version": "1.0.0",
+  "description": "Fluck of birds simulator with webGL",
+  "main": "index.js",
+  "author": "James Parker <u5744091@anu.edu.au>",
+  "license": "MIT"
+}
