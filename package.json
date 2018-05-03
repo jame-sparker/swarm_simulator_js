@@ -4,5 +4,20 @@
   "description": "Fluck of birds simulator with webGL",
   "main": "index.js",
   "author": "James Parker <u5744091@anu.edu.au>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack -p",
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server --hot"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "jshint": "^2.9.5",
+    "jshint-loader": "^0.8.4",
+    "webpack": "^4.6.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^2.1.2",
+    "webpack-dev-server": "^3.1.3"
+  }
 }
