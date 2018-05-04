@@ -15,3 +15,7 @@ export class Stack {
         return this.array.pop();
     }
 }
+
+export function uniformRand(low, high) {
+    return (high - low) * Math.random() + low;
+}

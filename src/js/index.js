@@ -1,50 +1,46 @@
 import {Drawer} from "./drawer.js"
+import {Bird} from "./bird.js"
 import $ from "jquery";
 
 $(document).ready(() => {
     webGLStart();
 });
 
-var effectiveFPMS = 60 / 1000;
+const NUM_BIRDS = 20;
+
 var lastTime = 0;
 
-function animate() {
-    var timeNow = new Date().getTime();
-    if (lastTime != 0) {
-        var elapsed = timeNow - lastTime;
-
-        for (var i in stars) {
-            stars[i].animate(elapsed);
-        }
-    }
-    lastTime = timeNow;
-}
-
-
-function tick() {
-    requestAnimFrame(tick);
-    handleKeys();
-    drawScene();
-    animate();
-}
-
-function drawScene(drawer){
+function drawScene(drawer, deltaTime){
     drawer.setBackgroundColor(1, 1, 1, 1);
     drawer.clearCanvas();
-    drawer.setColor(1, 0, 0, 1);
-    drawer.drawCircle(2, 0, 1);
-    drawer.setColor(0, 1, 0, 1);
-    drawer.drawRectangle(0, 0, 1, 1);
-    drawer.drawRectangle(0, 1.1, 1, 1);
+    drawer.setColor(0, 0, 1, 1);
+    drawer.drawRectangle(0, 0, 2, 7.3)
+    // Bird.updateAllBirds(deltaTime);
+    // Bird.drawAllBirds(drawer);
 }
 
+function initializeWorld(){
+    for(let i = 0; i < NUM_BIRDS; i++) {
+        Bird.createRandomInstance();
+    }
+}
 
 function webGLStart() {
     var canvas = document.getElementById("canvas");
     let drawer = Drawer.getInstance(canvas);
 
-    drawScene(drawer);
+    initializeWorld();
 
+    let then = 0;
 
-    // tick();
+    function render(now) {
+        now *= 0.001;
+        const deltaTime = now - then;
+        then = now;
+
+        drawScene(drawer, deltaTime);
+        requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
 }

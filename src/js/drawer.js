@@ -24,7 +24,7 @@ export class Drawer{
         const aspect = gl.viewportWidth / gl.viewportHeight;
         const zNear = 0.1;
         const zFar = 100.0;
-        const Z_PLANE = -6.0;
+        const Z_PLANE = -10.0;
 
         mat4.perspective(this.pMatrix,
                          fieldOfView,
@@ -110,12 +110,13 @@ export class Drawer{
         return vertices;
     }
 
+    /*Draws a rectangle at position (x, y) with some height and width*/
     drawRectangle(x, y, height, width) {
         let vertices = 
             [x, y, 
-            x - width, y,
-            x, y - height,
-            x - width, y - height];
+            x + width, y,
+            x, y + height,
+            x + width, y + height];
         const offset = 0;
 
         this.setVertexBuffer(vertices);
@@ -147,15 +148,12 @@ export class Drawer{
 
         const offset = 0;
 
-        console.log(this.mvMatrix);
         this.pushMVMatrix();
-        console.log(this.mvMatrix);
 
         mat4.translate(
             this.mvMatrix,
             this.mvMatrix,
             [x, y, 0]);
-        console.log(vertices);
         this.setVertexBuffer(vertices);
         this.setPMvMatrix();
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, offset, precision);
