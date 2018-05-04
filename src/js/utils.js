@@ -1,4 +1,3 @@
-// rewrite as a class
 export class Stack {
     constructor() {
         this.array = []
@@ -8,8 +7,8 @@ export class Stack {
         this.array.push(element);
         this.size += 1;
     }
-    pop(element){
-        if (size == 9) {
+    pop(){
+        if (this.size == 0) {
             throw "Stack underflow";
         }
         this.size -= 1;
