@@ -29,11 +29,13 @@ function tick() {
 }
 
 function drawScene(drawer){
-    drawer.setBackgroundColor(1, 0, 1, 1);
+    drawer.setBackgroundColor(1, 1, 1, 1);
     drawer.clearCanvas();
-    drawer.setColor(1, 0, 1, 1);
-    drawer.drawCircle(0.5, 0.5, 1);
+    drawer.setColor(1, 0, 0, 1);
+    drawer.drawCircle(2, 0, 1);
+    drawer.setColor(0, 1, 0, 1);
     drawer.drawRectangle(0, 0, 1, 1);
+    drawer.drawRectangle(0, 1.1, 1, 1);
 }
 
 

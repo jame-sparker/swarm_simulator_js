@@ -3,12 +3,12 @@ import {Stack} from "./utils.js";
 
 function copyMat4(mat) {
     var copy = mat4.create();
-    mat4.set(copy, mat);
+    mat4.copy(copy, mat);
     return copy;
 }
 
-/*Highlevel drawing class utilizing WebGL. It is not designed to draw with 
-dradation. Gradation can be easily implemented if anyone asks.*/
+/*Highlevel 2D drawing class utilizing WebGL. It is not designed to draw with 
+gradation. Gradation can be easily implemented if anyone asks.*/
 
 export class Drawer{
 
@@ -20,7 +20,7 @@ export class Drawer{
         this.mvMatrix = mat4.create();
         this.mvStack = new Stack();
 
-        const fieldOfView = glMatrix.toRadian(45);
+        const fieldOfView = glMatrix.toRadian(40);
         const aspect = gl.viewportWidth / gl.viewportHeight;
         const zNear = 0.1;
         const zFar = 100.0;
@@ -111,12 +111,16 @@ export class Drawer{
     }
 
     drawRectangle(x, y, height, width) {
-        let vertices = [x, y, x - width, y - height];
+        let vertices = 
+            [x, y, 
+            x - width, y,
+            x, y - height,
+            x - width, y - height];
         const offset = 0;
 
         this.setVertexBuffer(vertices);
         this.setPMvMatrix();
-        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, 2);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, 4);
     }
 
     /*Draws a circle at position (x,y) with radius r
@@ -135,7 +139,7 @@ export class Drawer{
                 vertices = this.getCircleVertices(r, precision);
                 this.circleBuffer[r] = vertices;
             } else {
-                vertices = circleBuffer[r];
+                vertices = this.circleBuffer[r];
             }
         } else {
             vertices = getCircleVertices(r, precision);
@@ -143,13 +147,15 @@ export class Drawer{
 
         const offset = 0;
 
+        console.log(this.mvMatrix);
         this.pushMVMatrix();
+        console.log(this.mvMatrix);
 
-        // mat4.translate(
-        //     this.mvMatrix,
-        //     this.mvMatrix,
-        //     [x, y, 0]);
-
+        mat4.translate(
+            this.mvMatrix,
+            this.mvMatrix,
+            [x, y, 0]);
+        console.log(vertices);
         this.setVertexBuffer(vertices);
         this.setPMvMatrix();
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, offset, precision);
