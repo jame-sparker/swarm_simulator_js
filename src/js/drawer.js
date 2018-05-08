@@ -1,5 +1,8 @@
-import {mat4, glMatrix} from "gl-matrix";
+import {vec2, mat4, glMatrix} from "gl-matrix";
 import {Stack} from "./utils.js";
+import {
+    MAX_WIDTH, MAX_HEIGHT
+} from "./config"
 
 function copyMat4(mat) {
     var copy = mat4.create();
@@ -34,7 +37,7 @@ export class Drawer{
         mat4.translate(
             this.mvMatrix,
             this.mvMatrix,
-            [0.0, 0.0, Z_PLANE]);
+            [-MAX_WIDTH / 2, -MAX_HEIGHT / 2, Z_PLANE]);
 
         this.gl.useProgram(this.programInfo.program);
     }
@@ -108,6 +111,35 @@ export class Drawer{
             vertices.push(y);
         }
         return vertices;
+    }
+
+    /*drawLine*/
+
+    drawLine(x1, y1, x2, y2, thickness) {
+        let inv = vec2.fromValues(y2 - y1, -(x2 - x1)); 
+        let norm = vec2.create();
+        vec2.normalize(norm, inv);
+        let p1 = vec2.fromValues(x1, y1);
+        let p2 = vec2.fromValues(x2, y2);
+        let p1a = vec2.create();
+        let p1b = vec2.create();
+        let p2a = vec2.create();
+        let p2b = vec2.create();
+        vec2.scaleAndAdd(p1a, p1, norm, thickness / 2);
+        vec2.scaleAndAdd(p1b, p1, norm, -thickness / 2);
+        vec2.scaleAndAdd(p2a, p2, norm, thickness / 2);
+        vec2.scaleAndAdd(p2b, p2, norm, -thickness / 2);
+        let vertices = [
+            p1a[0], p1a[1],
+            p1b[0], p1b[1],
+            p2a[0], p2a[1],
+            p2b[0], p2b[1],
+            ]
+        const offset = 0;
+
+        this.setVertexBuffer(vertices);
+        this.setPMvMatrix();
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, 4);
     }
 
     /*Draws a rectangle at position (x, y) with some height and width*/

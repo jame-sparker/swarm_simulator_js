@@ -1,35 +1,26 @@
 import {Drawer} from "./drawer.js"
-import {Bird} from "./bird.js"
+import {Simulator} from "./simulator.js"
+import {NUM_BIRDS} from "./config.js"
+
 import $ from "jquery";
 
 $(document).ready(() => {
     webGLStart();
 });
 
-const NUM_BIRDS = 20;
+let simulator;
 
-var lastTime = 0;
-
-function drawScene(drawer, deltaTime){
+function drawScene(drawer){
     drawer.setBackgroundColor(1, 1, 1, 1);
     drawer.clearCanvas();
     drawer.setColor(0, 0, 1, 1);
-
-    Bird.updateAllBirds(deltaTime);
-    Bird.drawAllBirds(drawer);
-}
-
-function initializeWorld(){
-    for(let i = 0; i < NUM_BIRDS; i++) {
-        Bird.createRandomInstance();
-    }
+    simulator.draw();
 }
 
 function webGLStart() {
     var canvas = document.getElementById("canvas");
     let drawer = Drawer.getInstance(canvas);
-
-    initializeWorld();
+    simulator = new Simulator(NUM_BIRDS, drawer);
 
     let then = 0;
 
@@ -37,8 +28,10 @@ function webGLStart() {
         now *= 0.001;
         const deltaTime = now - then;
         then = now;
+        
+        simulator.update(deltaTime);
 
-        drawScene(drawer, deltaTime);
+        drawScene(drawer);
         requestAnimationFrame(render);
     }
 

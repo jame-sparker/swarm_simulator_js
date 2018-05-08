@@ -12,36 +12,23 @@ export class Grid {
     }
 
     push(pos, obj) {
-        let gridPos = this.getGridPos(pos);
+        let gridPos = this.getGridPos(pos[0], pos[1]);
         let key = gridPos.toString();
-        if (!grid[key]) {
-            grid[key] = [[pos, obj]];
+        if (!this.grid[key]) {
+            this.grid[key] = [[pos, obj]];
         } else {
-            grid[key].push([pos, obj]);
+            this.grid[key].push([pos, obj]);
         }
     }
 
     remove(pos, obj) {
-        let gridPos = this.getGridPos(pos);
+        let gridPos = this.getGridPos(pos[0], pos[1]);
         let tile = this.grid[gridPos.toString()];
         let i = 0;
         for (; i < tile.length; i++) {
             if (tile[i][1] === obj) break;
         }
-        this.tile.splice(i, 1);
-    }
-
-    findNearbyAll(pos, radius) {
-        let nearbyObj = [];
-        for (let key in this.grid) {
-            for( let posObj in this.grid[key]) {
-                let targetPos = posObj[0];
-                if (vec2.dist(pos, targetPos) < radius) {
-                    nearbyObj.push(posObj[1]);
-                }
-            }
-        }
-        return nearbyObj;
+        tile.splice(i, 1);
     }
 
     findNearby(pos, radius){
@@ -51,26 +38,39 @@ export class Grid {
         let maxGridPos = this.getGridPos(origX + radius, origY + radius);
         let minX = minGridPos[0];
         let minY = minGridPos[1];
-        let maxX = manGridPos[0];
+        let maxX = maxGridPos[0];
         let maxY = maxGridPos[1];
 
-        if ((maxX + 1) % this.sizeX == minX || 
-            (maxY + 1) % this.sizeY == minY) {
-            return findNearbyAll(pos, radius);
-        }
         let nearbyObj = [];
-        for (let i = minX; i >= minX || i <= maxX; i++) {
-            for (let j = minY; j >= minY || j <= maxY; j++) {
-                let targetGrid = this.grid[[i, j].toString()]
-                for( let posObj in this.grid[key]) {
+        for (let i = 0; i <= (maxX - minX + this.sizeX) % this.sizeX ; i++) {
+            for (let j = 0; j <= (maxY - minY + this.sizeY) % this.sizeY; j++) {
+                let key = [
+                    (i + minX) % this.sizeX, 
+                    (j + minY) % this.sizeY
+                    ].toString();
+                
+                if (!this.grid[key]) continue;
+
+                for(let posObj of this.grid[key]) {
                     let targetPos = posObj[0];
-                    if (vec2.dist(pos, targetPos) < radius) {
-                        nearbyObj.push(posObj[1]);
+                    if (pos !== targetPos && vec2.dist(pos, targetPos) < radius) {
+                        nearbyObj.push(posObj);
                     }
                 }
             }
         }
         return nearbyObj;
+    }
+
+    /*Returns nearest x number of objects under some radius*/
+    getNearestXRadius(pos, radius, count) {
+        let nearbyObj = this.findNearby(pos, radius);
+        nearbyObj.sort((a, b) => {
+            let dist_a = vec2.dist(a[0], pos);
+            let dist_b = vec2.dist(b[0], pos);
+            return dist_a - dist_b;
+        });
+        return nearbyObj.slice(0, count);
     }
 
     // get associated grid coordinates
@@ -80,8 +80,8 @@ export class Grid {
     getGridPos(origX, origY) {
         let gridX = Math.floor(origX / (this.width + 1) * this.sizeX);
         let gridY = Math.floor(origY / (this.height + 1) * this.sizeY);
-        gridX = (gridX + this.sizeX) % sizeX; // apply wrap around
-        gridY = (gridY + this.sizeY) % sizeY; // apply wrap around 
+        gridX = (gridX + this.sizeX) % this.sizeX; // apply wrap around
+        gridY = (gridY + this.sizeY) % this.sizeY; // apply wrap around 
         return vec2.fromValues(gridX, gridY);
     }
 }
