@@ -31,6 +31,24 @@ export class Grid {
         tile.splice(i, 1);
     }
 
+    modDist(v1, v2) {
+        // find minimum x difference
+        let x1 = v1[0];
+        let x2 = v2[0];
+        let minX = Math.min(
+            Math.abs(x1 - x2), 
+            Math.abs(x1 - x2 + this.width), 
+            Math.abs(x1 - x2 - this.width));
+
+        let y1 = v1[1];
+        let y2 = v2[1];
+        let minY = Math.min(
+            Math.abs(y1 - y2), 
+            Math.abs(y1 - y2 + this.height), 
+            Math.abs(y1 - y2 - this.height));
+        return Math.sqrt(minX * minX + minY * minY);
+    }
+
     findNearby(pos, radius){
         let origX = pos[0];
         let origY = pos[1];
@@ -53,7 +71,7 @@ export class Grid {
 
                 for(let posObj of this.grid[key]) {
                     let targetPos = posObj[0];
-                    if (pos !== targetPos && vec2.dist(pos, targetPos) < radius) {
+                    if (pos !== targetPos && this.modDist(pos, targetPos) < radius) {
                         nearbyObj.push(posObj);
                     }
                 }
