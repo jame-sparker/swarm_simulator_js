@@ -11,7 +11,7 @@ const BIRD_SIZE = 0.05;
 
 const LIGHT_BLUE = [0.7, 0.9, 1, 1];
 const LIGHT_GRAY = [0.8, 0.8, 0.8, 1];
-const DARK_BLUE = [0.074, 0.164, 0.964, 0.3];
+const DARK_BLUE = [0.074, 0.164, 0.964, 0.5];
 const RED_A2 = [1, 0, 0, 0.2]; // alpha = 0.2
 const YELLOW_A2 = [1, 0, 1, 0.2]; // alpha = 0.2
 
@@ -77,6 +77,7 @@ export class Bird{
         this.grid = grid;
         this.grid.push(this.pos, this);
 
+        this.accum_vel = vec2.create();
         this.survival_time = 0;
         this.fitness = 1;
         this.id = Bird.count;
@@ -147,7 +148,7 @@ export class Bird{
             }
 
             let target_pos = pos_obj[0];
-            let d = vec2.dist(target_pos, this.pos);
+            let d = vec2.length(this.modVec(target_pos, this.pos));
 
             if (d < OPT_MIN_DISTANCE) {
                 distance_error += Math.min(Math.log(0.2 / d), MAX_DISTANCE_ERROR);
@@ -160,7 +161,13 @@ export class Bird{
             }
 
         }
-        return distance_error
+        let veclocity_error = 0;
+
+        vec2.scaleAndAdd(this.accum_vel, this.accum_vel, this.vel, 0.001);
+        veclocity_error = vec2.dot(this.accum_vel, this.vel);
+        if (veclocity_error < 0.5) veclocity_error = 0;
+        
+        return distance_error + veclocity_error;
     }
 
     update(dt) {

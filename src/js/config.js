@@ -1,4 +1,4 @@
-export const NUM_BIRDS = 20;
+export const NUM_BIRDS = 200;
 export const BIRD_DETECTION = 5; // number of nearby birds to detect
 export const MAX_WIDTH = 16.5;
 export const MAX_HEIGHT = MAX_WIDTH / 2;
@@ -11,7 +11,7 @@ export const INIT_VEL_RANGE = 2;
 
 // Machine learning parameters
 // Penalty function parameters
-export const CUTOFF_RADIUS = 3.5;
+export const CUTOFF_RADIUS = 1.5;
 export const OPT_MAX_DISTANCE = 0.4; // optimal max distance
 export const OPT_MIN_DISTANCE = 0.12; // optimal min distance
 // Error function evaluated below this point is less than MAX_DISTANCE_ERROR
