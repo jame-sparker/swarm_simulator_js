@@ -14,9 +14,9 @@ function drawScene(drawer, deltaTime){
     drawer.setBackgroundColor(1, 1, 1, 1);
     drawer.clearCanvas();
     drawer.setColor(0, 0, 1, 1);
-    drawer.drawRectangle(0, 0, 2, 7.3)
-    // Bird.updateAllBirds(deltaTime);
-    // Bird.drawAllBirds(drawer);
+
+    Bird.updateAllBirds(deltaTime);
+    Bird.drawAllBirds(drawer);
 }
 
 function initializeWorld(){

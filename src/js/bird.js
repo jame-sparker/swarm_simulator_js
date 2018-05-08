@@ -1,10 +1,13 @@
 import {vec2} from "gl-matrix";
 import {uniformRand} from "./utils";
 
-const C = 1 // drag coefficient
+const C = 0.1 // drag coefficient
 const BIRD_SIZE = 0.05;
-const INIT_VEL_RANGE = 0.05;
+const INIT_VEL_RANGE = 0.55;
 const INIT_POS_RANGE = 1;
+
+const MAX_WIDTH = 8.25;
+const MAX_HEIGHT = MAX_WIDTH / 2;
 
 export class Bird{
     // static birds = [];
@@ -52,6 +55,21 @@ export class Bird{
 
         vec2.scale(delta_pos, this.vel, dt);
         vec2.add(this.pos, this.pos, delta_pos);
+        if (this.pos[0] > MAX_WIDTH) {
+            this.pos[0] -= 2 * MAX_WIDTH;
+        } 
+
+        if (this.pos[0] < -MAX_WIDTH) {
+            this.pos[0] += 2 * MAX_WIDTH;
+        } 
+
+        if (this.pos[1] > MAX_HEIGHT) {
+            this.pos[1] -= 2 * MAX_HEIGHT;
+        } 
+
+        if (this.pos[1] < -MAX_HEIGHT) {
+            this.pos[1] += 2 * MAX_HEIGHT;
+        } 
 
         // calculate drag
         vec2.scale(delta_vel, this.vel, -C * dt * vel_len); 

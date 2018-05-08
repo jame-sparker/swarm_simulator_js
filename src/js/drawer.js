@@ -20,7 +20,7 @@ export class Drawer{
         this.mvMatrix = mat4.create();
         this.mvStack = new Stack();
 
-        const fieldOfView = glMatrix.toRadian(40);
+        const fieldOfView = glMatrix.toRadian(45);
         const aspect = gl.viewportWidth / gl.viewportHeight;
         const zNear = 0.1;
         const zFar = 100.0;
