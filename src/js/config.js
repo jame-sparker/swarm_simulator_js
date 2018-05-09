@@ -17,7 +17,8 @@ export const SHOW_CONNECTION_LINES = false;
 export const CUTOFF_RADIUS = 1.5; // Maximual distance detectable by birds 
 export const OPT_MAX_DISTANCE = 0.4; // optimal max distance
 export const OPT_MIN_DISTANCE = 0.12; // optimal min distance
-export const MIN_ALLOWED_SPEED = 1.5; // Penalty if the speed is below this value;
+export const MIN_ALLOWED_SPEED = 1.8; // Penalty if the speed is below this value;
+export const MIN_ALLOWED_ACC_UNDER_MIN_SP = 0.6; // Penalty if the speed is below this value;
 // Error function evaluated below this point is less than MAX_DISTANCE_ERROR
 // Must be greater than OPT_MIN_DISTANCE
 export const MAX_DISTANCE = 2; 

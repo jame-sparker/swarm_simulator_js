@@ -5,7 +5,7 @@ import {
     SHOW_CONNECTION_LINES, OPT_MIN_DISTANCE, OPT_MAX_DISTANCE,
     MAX_DISTANCE_ERROR, QUAD_DIST_A, QUAD_DIST_B, QUAD_DIST_C,
     BIRD_REQUIRED, ERROR_SCALAR, INIT_VEL_RANGE, NUM_BIRDS,
-    MAX_ACCELERATION, MIN_ALLOWED_SPEED
+    MAX_ACCELERATION, MIN_ALLOWED_SPEED, MIN_ALLOWED_ACC_UNDER_MIN_SP
 } from "./config"
 
 const BIRD_SIZE = 0.05;
@@ -141,7 +141,6 @@ export class Bird{
     }
 
     // error function 
-    // maximum error is 1
     error() {
         let distance_error = 0;
         for (let i = 0; i < BIRD_REQUIRED; i++) {
@@ -179,7 +178,7 @@ export class Bird{
                 Math.min(speed, MIN_ALLOWED_SPEED) - MIN_ALLOWED_SPEED, 
                 2));
         let acceleration_size = vec2.len(this.acc);
-        speed_error = acceleration_size < 0.6 ? speed_error : 0;
+        speed_error = acceleration_size < MIN_ALLOWED_ACC_UNDER_MIN_SP ? speed_error : 0;
 
         return distance_error + veclocity_error * 1.5 + speed_error;
     }
