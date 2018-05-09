@@ -4,7 +4,8 @@ import {
     MAX_WIDTH, MAX_HEIGHT, C, CUTOFF_RADIUS, BIRD_DETECTION, 
     SHOW_CONNECTION_LINES, OPT_MIN_DISTANCE, OPT_MAX_DISTANCE,
     MAX_DISTANCE_ERROR, QUAD_DIST_A, QUAD_DIST_B, QUAD_DIST_C,
-    BIRD_REQUIRED, ERROR_SCALAR, INIT_VEL_RANGE, NUM_BIRDS
+    BIRD_REQUIRED, ERROR_SCALAR, INIT_VEL_RANGE, NUM_BIRDS,
+    MAX_ACCELERATION, MIN_ALLOWED_SPEED
 } from "./config"
 
 const BIRD_SIZE = 0.05;
@@ -165,12 +166,23 @@ export class Bird{
 
         }
         let veclocity_error = 0;
+        vec2.scale(this.accum_vel, this.accum_vel, 0.98);
 
         vec2.scaleAndAdd(this.accum_vel, this.accum_vel, this.vel, 0.001);
         veclocity_error = vec2.dot(this.accum_vel, this.vel);
         if (veclocity_error < 0.5) veclocity_error = 0;
-        
-        return distance_error ;//+ veclocity_error;
+
+        let speed_error = 0;
+        let speed = vec2.len(this.vel);
+
+        speed_error = Math.max(0, 
+            Math.pow(
+                Math.min(speed, MIN_ALLOWED_SPEED) - MIN_ALLOWED_SPEED, 
+                2));
+        let acceleration_size = vec2.len(this.acc);
+        speed_error = acceleration_size < 1 ? speed_error : 0;
+
+        return distance_error + veclocity_error + speed_error;
     }
 
     update(dt) {
@@ -187,8 +199,8 @@ export class Bird{
         }
 
         // normalize to values between -1 and 1
-        this.acc[0] = this.acc[0] * 2 - 1; 
-        this.acc[1] = this.acc[1] * 2 - 1;
+        this.acc[0] = (this.acc[0] * 2 - 1) * MAX_ACCELERATION; 
+        this.acc[1] = (this.acc[1] * 2 - 1) * MAX_ACCELERATION;
         // if(this.id === 1) console.log(this.acc);
 
         let delta_pos = vec2.create();
@@ -214,7 +226,7 @@ export class Bird{
 
     draw(drawer){
 
-        if (this.net.best && this.fitness > 0){
+        if (this.net.best && this.net.score > 0){
 
             drawer.setColor(...RED_A2);
             drawer.drawCircle(this.pos[0], this.pos[1], OPT_MAX_DISTANCE);

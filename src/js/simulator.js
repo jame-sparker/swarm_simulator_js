@@ -34,6 +34,7 @@ export class Simulator {
         this.total_time = 0;
         this.alive_gen = {};
         this.alive_gen[1] = NUM_BIRDS;
+        this.last_mutation_rate = 0;
 
         let generation = 1;
         for(let i = 0; i < birdCount; i++) {
@@ -61,19 +62,20 @@ export class Simulator {
         $("#performance").text("Average Fitness: " + this.getAverage());
         $("#best").text("Best Fitness: " + this.neat.getFittest().score);
         $("#generations").text("Alive generations: " + JSON.stringify(this.alive_gen));
+        $("#mutation").text("Last mutation rate: " + this.last_mutation_rate);
     }
 
     update(deltaTime) {
         if (deltaTime > 1) return; // do not simulate anything when there is too much gap
-        this.neat.population[0].best = false;
 
         this.total_time += deltaTime;
         let dead_birds = Bird.updateAllBirds(deltaTime);
         let newNetworks = [];
+        this.neat.population[0].best = false;
 
         for (let i = 0; i < dead_birds.length; i++){
             let dead_bird = Bird.birds[dead_birds[i]];
-            newNetworks.push(this.createNewNetwork(dead_bird.mutation_rate));
+            newNetworks.push(this.createNewNetwork());
         }
 
         for (let i = 0; i < dead_birds.length; i++) {
@@ -81,8 +83,10 @@ export class Simulator {
             this.neat.population[dead_bird.net.index] = newNetworks[i];
 
             let new_generation = newNetworks[i].gen;
-            this.updateGeneration(dead_bird.generation , new_generation);
-            let new_mutation_rate = dead_bird.mutation_rate * uniformRand(1 / 1.2, 1.2);
+            this.updateGeneration(dead_bird.generation, new_generation);
+            
+            let new_mutation_rate = newNetworks[i].mut + uniformRand(-0.02, 0.02);
+            this.last_mutation_rate = new_mutation_rate;
             new_mutation_rate = Math.min(new_mutation_rate, 1);
 
             let newBird = Bird.createRandomInstance(
@@ -96,7 +100,7 @@ export class Simulator {
 
         this.sortWithIndex();
 
-        this.updateHtml();
+        this.updateHtml(deltaTime);
     }
 
     sortWithIndex() {
@@ -108,13 +112,15 @@ export class Simulator {
         this.neat.population[0].best = true;
     }
 
-    createNewNetwork(mutation_rate) {
+    createNewNetwork() {
         let network = null;
+        let mutation_rate = null;
 
         if (Math.random() <= this.neat.elitism) { // single offspring
             let old_network = this.neat.getParent();
             network = Network.fromJSON(old_network.toJSON()); // copies
             network.gen = old_network.owner.generation + 1;
+            network.mut = old_network.owner.mutation_rate;
         } else { // cross over
             network = this.getOffspring();
         }
@@ -132,10 +138,12 @@ export class Simulator {
     getOffspring() {
         var parent1 = this.neat.getParent();
         var parent2 = this.neat.getParent();
-        let new_gen = Math.max(parent1.owner.generation, parent2.owner.generation) + 1
+        let new_gen = Math.max(parent1.owner.generation, parent2.owner.generation) + 1;
+        let new_mutation_rate = (parent1.owner.mutation_rate + parent2.owner.mutation_rate) / 2;
 
         let new_net = Network.crossOver(parent1, parent2, this.neat.equal);
         new_net.gen = new_gen;
+        new_net.mut = new_mutation_rate;
         return new_net;
     }
 
