@@ -20,8 +20,7 @@ These three penalties encourage agents to move in complex behaviour while gettin
 ## Pictures
 <img alt="Swarm simulation" src="./swarm.png">
 
-## Demo
-jamesparker.ml/swarm
+## [Demo](jamesparker.ml/swarm)
 
 ## Running locally
 To bundle the app, we used webpack. Running `yarn start` should start a local webpack server.
