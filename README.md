@@ -19,8 +19,11 @@ These three penalties encourage agents to move in complex behaviour while gettin
 
 ## Pictures
 <img alt="Swarm simulation" src="./swarm.png">
+
 ## Demo
 jamesparker.ml/swarm
 
-## All tweakable parameters are in src/config.js.
+## Running locally
+To bundle the app, we used webpack. Running `yarn start` should start a local webpack server.
+All tweakable parameters are in src/config.js.
 If you find any interesting configuration, you can report it under issues.
