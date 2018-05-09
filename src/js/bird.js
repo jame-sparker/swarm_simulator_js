@@ -20,11 +20,11 @@ export class Bird{
     // static count = 0;
 
     /*Creates a random instance*/
-    static createRandomInstanceAndPush(net, generation, grid) {
-        Bird.birds.push(Bird.createRandomInstance(net, generation, grid));
+    static createRandomInstanceAndPush(net, generation, grid, mutation_rate) {
+        Bird.birds.push(Bird.createRandomInstance(net, generation, grid, mutation_rate));
     }
 
-    static createRandomInstance(net, generation, grid) {
+    static createRandomInstance(net, generation, grid, mutation_rate) {
         let r = Math.random;
         
         let pos = vec2.fromValues(
@@ -34,7 +34,7 @@ export class Bird{
             uniformRand(-INIT_VEL_RANGE, INIT_VEL_RANGE), 
             uniformRand(-INIT_VEL_RANGE, INIT_VEL_RANGE))
 
-        return new Bird(pos, vel, net, generation, grid);
+        return new Bird(pos, vel, net, mutation_rate, generation, grid);
         
     }
 
@@ -60,7 +60,7 @@ export class Bird{
         }
     }
     
-    constructor(pos, vel, net, generation, grid){
+    constructor(pos, vel, net, mutation_rate, generation, grid){
         this.pos = pos;
         this.prev_pos = vec2.create();
         vec2.copy(this.prev_pos, this.pos);
@@ -73,6 +73,10 @@ export class Bird{
         this.acc = vec2.fromValues(0, 0); 
         this.net = net;
         this.net.score = 0;
+        this.net.owner = this;
+
+        this.mutation_rate = mutation_rate;
+
         this.generation = generation;
         this.grid = grid;
         this.grid.push(this.pos, this);
@@ -94,8 +98,6 @@ export class Bird{
 
     getNetworkInputs() {
         let inputs = [
-            this.pos[0] / MAX_WIDTH, 
-            this.pos[1] / MAX_HEIGHT, 
             this.vel[0],
             this.vel[1]];
         for(let pos_obj of this.closest_birds) {
@@ -106,10 +108,11 @@ export class Bird{
                 (this.modScalar(pos[0], this.pos[0], MAX_WIDTH)) / CUTOFF_RADIUS,
                 (this.modScalar(pos[1], this.pos[1], MAX_HEIGHT)) / CUTOFF_RADIUS,
                 vel[0] - this.vel[0],
-                vel[1] - this.vel[1]);
+                vel[1] - this.vel[1],
+                bird_obj.fitness - 0.5);
         }
         for (let i = 0; i < BIRD_DETECTION - this.closest_birds; i++) {
-            inputs.push(1, 0, 0, 0, 0); // add five elements for each missing bird
+            inputs.push(1, 0, 0, 0, 0, 0); // add six elements for each missing bird
         }
         return inputs;
     }
@@ -167,7 +170,7 @@ export class Bird{
         veclocity_error = vec2.dot(this.accum_vel, this.vel);
         if (veclocity_error < 0.5) veclocity_error = 0;
         
-        return distance_error + veclocity_error;
+        return distance_error ;//+ veclocity_error;
     }
 
     update(dt) {
@@ -177,7 +180,7 @@ export class Bird{
         if(this.survival_time > 5){
             this.fitness -= dt * this.error() * ERROR_SCALAR;
         }
-        if(this.survival_time > 6) {
+        if(this.survival_time > 10) {
             // seconds per loss
             // taking more time to loose the same amout of fitness is better
             this.net.score =  (this.survival_time - 5) / (1.001 - this.fitness); 
@@ -186,7 +189,7 @@ export class Bird{
         // normalize to values between -1 and 1
         this.acc[0] = this.acc[0] * 2 - 1; 
         this.acc[1] = this.acc[1] * 2 - 1;
-        // console.log(this.acc)
+        // if(this.id === 1) console.log(this.acc);
 
         let delta_pos = vec2.create();
         let delta_vel = vec2.create();
@@ -211,14 +214,13 @@ export class Bird{
 
     draw(drawer){
 
-        if (this.id % NUM_BIRDS === 1){
+        if (this.net.best && this.fitness > 0){
+
             drawer.setColor(...RED_A2);
             drawer.drawCircle(this.pos[0], this.pos[1], OPT_MAX_DISTANCE);
             drawer.setColor(...YELLOW_A2);
             drawer.drawCircle(this.pos[0], this.pos[1], OPT_MIN_DISTANCE);
-        }
 
-        if (this.id % NUM_BIRDS === 1) {
             let line_thickness = 0.05;
             drawer.setColor(...DARK_BLUE);
             for (let n of this.closest_birds) {
@@ -246,8 +248,6 @@ export class Bird{
         let color = [1 -this.fitness, 0, this.fitness, 1];
         drawer.setColor(...color);
         drawer.drawCircle(this.pos[0], this.pos[1], BIRD_SIZE);
-
-
     }
 
 }

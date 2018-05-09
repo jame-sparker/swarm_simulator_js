@@ -7,7 +7,7 @@ export const C = 0.1 // drag coefficient
 export const GRID_X = 20;
 export const GRID_Y = GRID_X / 2;
 export const SHOW_CONNECTION_LINES = true;
-export const INIT_VEL_RANGE = 2;
+export const INIT_VEL_RANGE = 1;
 
 // Machine learning parameters
 // Penalty function parameters
