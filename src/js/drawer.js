@@ -1,7 +1,7 @@
 import {vec2, mat4, glMatrix} from "gl-matrix";
 import {Stack} from "./utils.js";
 import {
-    MAX_WIDTH, MAX_HEIGHT
+    MAX_WIDTH, MAX_HEIGHT, WORLD_SCALER
 } from "./config"
 
 function copyMat4(mat) {
@@ -37,7 +37,8 @@ export class Drawer{
         mat4.translate(
             this.mvMatrix,
             this.mvMatrix,
-            [-MAX_WIDTH / 2, -MAX_HEIGHT / 2, Z_PLANE]);
+            [- MAX_WIDTH / (2 * WORLD_SCALER), 
+            -MAX_HEIGHT / (2 * WORLD_SCALER), Z_PLANE]);
 
         this.gl.useProgram(this.programInfo.program);
     }
@@ -60,13 +61,17 @@ export class Drawer{
     }
 
     setVertexBuffer(vertices) {
+        let scaled_vertices = [];
+        // let scaled_vertices = vertices;
+        for(let i = 0; i < vertices.length; i++)
+            scaled_vertices.push(vertices[i] / WORLD_SCALER);
         const numComponents = 2;
         const type = this.gl.FLOAT;
         const normalize = false;
         const stride = 0;
         const offset = 0;
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(scaled_vertices), this.gl.STATIC_DRAW);
         this.gl.vertexAttribPointer(
             this.programInfo.attribLocations.vertexPosition,
             numComponents,
@@ -156,6 +161,13 @@ export class Drawer{
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, 4);
     }
 
+    translateMV(x, y, z) {
+        mat4.translate(
+            this.mvMatrix,
+            this.mvMatrix,
+            [x / WORLD_SCALER, y / WORLD_SCALER, 0]);
+    }
+
     /*Draws a circle at position (x,y) with radius r
     buffer: if it is true, it stores vertices of circle internally for some radius
     */
@@ -182,10 +194,7 @@ export class Drawer{
 
         this.pushMVMatrix();
 
-        mat4.translate(
-            this.mvMatrix,
-            this.mvMatrix,
-            [x, y, 0]);
+        this.translateMV(x, y, 0);
         this.setVertexBuffer(vertices);
         this.setPMvMatrix();
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, offset, precision);

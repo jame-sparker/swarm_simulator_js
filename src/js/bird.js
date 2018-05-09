@@ -166,7 +166,6 @@ export class Bird{
 
         }
         let veclocity_error = 0;
-        vec2.scale(this.accum_vel, this.accum_vel, 0.98);
 
         vec2.scaleAndAdd(this.accum_vel, this.accum_vel, this.vel, 0.001);
         veclocity_error = vec2.dot(this.accum_vel, this.vel);
@@ -180,9 +179,9 @@ export class Bird{
                 Math.min(speed, MIN_ALLOWED_SPEED) - MIN_ALLOWED_SPEED, 
                 2));
         let acceleration_size = vec2.len(this.acc);
-        speed_error = acceleration_size < 1 ? speed_error : 0;
+        speed_error = acceleration_size < 0.6 ? speed_error : 0;
 
-        return distance_error + veclocity_error + speed_error;
+        return distance_error + veclocity_error * 1.5 + speed_error;
     }
 
     update(dt) {
@@ -232,7 +231,8 @@ export class Bird{
             drawer.drawCircle(this.pos[0], this.pos[1], OPT_MAX_DISTANCE);
             drawer.setColor(...YELLOW_A2);
             drawer.drawCircle(this.pos[0], this.pos[1], OPT_MIN_DISTANCE);
-
+        }
+        if ((this.net.best && this.net.score > 0) || SHOW_CONNECTION_LINES){
             let line_thickness = 0.05;
             drawer.setColor(...DARK_BLUE);
             for (let n of this.closest_birds) {

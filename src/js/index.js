@@ -13,7 +13,6 @@ let simulator;
 function drawScene(drawer){
     drawer.setBackgroundColor(1, 1, 1, 1);
     drawer.clearCanvas();
-    drawer.setColor(0, 0, 1, 1);
     simulator.draw();
 }
 
