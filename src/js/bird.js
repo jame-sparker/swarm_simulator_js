@@ -154,7 +154,7 @@ export class Bird{
             let d = vec2.length(this.modVec(target_pos, this.pos));
 
             if (d < OPT_MIN_DISTANCE) {
-                distance_error += Math.min(Math.log(0.2 / d), MAX_DISTANCE_ERROR);
+                distance_error += Math.log(0.2 / d);
 
             } else if (d > OPT_MAX_DISTANCE) {
                 // quadratic function with f(OPT_MAX_DISTANCE) = 0, f(2) = MAX_DISTANCE_ERROR

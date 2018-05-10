@@ -1,10 +1,11 @@
 export const WORLD_SCALER = 2; // scales everything
 
 export const NUM_BIRDS = 300;
-export const BIRD_DETECTION = 5; // number of detectable nearby birds
+export const BIRD_DETECTION = 7; // number of detectable nearby birds
+export const CUTOFF_RADIUS = 2.5; // Maximual distance detectable by birds 
 export const MAX_WIDTH = 16.55 * WORLD_SCALER;
 export const MAX_HEIGHT = MAX_WIDTH / 2;
-export const MAX_ACCELERATION = 5;
+export const MAX_ACCELERATION = 10;
 export const INIT_VEL_RANGE = 1;
 export const C = 0.1; // drag coefficient
 
@@ -14,9 +15,8 @@ export const SHOW_CONNECTION_LINES = false;
 
 // Machine learning parameters
 // Penalty function parameters
-export const CUTOFF_RADIUS = 1.5; // Maximual distance detectable by birds 
 export const OPT_MAX_DISTANCE = 0.4; // optimal max distance
-export const OPT_MIN_DISTANCE = 0.12; // optimal min distance
+export const OPT_MIN_DISTANCE = 0.2; // optimal min distance
 export const MIN_ALLOWED_SPEED = 1.8; // Penalty if the speed is below this value;
 export const MIN_ALLOWED_ACC_UNDER_MIN_SP = 0.6; // Penalty if the speed is below this value;
 // Error function evaluated below this point is less than MAX_DISTANCE_ERROR
